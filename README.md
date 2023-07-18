@@ -1,4 +1,4 @@
-# DevBot Backend
+# AI Products Backend
 
 Tools Used:
 a. LangChain - to connect different components in a LLM Chain
