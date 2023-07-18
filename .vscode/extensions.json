@@ -1,0 +1,16 @@
+{
+	"recommendations": [
+		"ms-vscode-remote.vscode-remote-extensionpack",
+		"ms-python.black-formatter",
+		"ms-vscode.remote-explorer",
+		"ms-vscode.remote-server",
+		"njpwerner.autodocstring",
+		"ms-azuretools.vscode-docker",
+		"mikestead.dotenv",
+		"michelemelluso.gitignore",
+		"ms-python.vscode-pylance",
+		"ms-python.python",
+		"donjayamanne.python-environment-manager",
+		"sonarsource.sonarlint-vscode"
+	]
+}

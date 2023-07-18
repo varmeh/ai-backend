@@ -1,0 +1,11 @@
+{
+    "[python]": {
+        "editor.defaultFormatter": "ms-python.black-formatter",
+        "editor.formatOnPaste": true,
+	    "editor.formatOnSave": true
+    },
+    "python.formatting.provider": "none",
+    "python.analysis.extraPaths": [
+        "/Users/varunmehta/Projects/garvik/ahaan-backend/.venv/lib/python3.10/site-packages"
+    ],
+}
