@@ -1,10 +1,10 @@
 from pydantic import BaseModel
-from ..util import snake_to_camel
+from ..util import to_camel_case
 
 
 class PydanticSubModel(BaseModel):
     class Config:
-        alias_generator = snake_to_camel
+        alias_generator = to_camel_case
         allow_population_by_field_name = True
 
 

@@ -1,6 +1,9 @@
+from ast import alias
 from typing import Annotated
-from fastapi import APIRouter, HTTPException, Depends
-from ...common import BaseModel
+from fastapi import APIRouter, HTTPException, Depends, Body, Path
+
+# from app.common import BaseModel
+from pydantic import BaseModel
 
 
 router = APIRouter(prefix="/items", tags=["items"])
@@ -9,17 +12,17 @@ router = APIRouter(prefix="/items", tags=["items"])
 class Item(BaseModel):
     name: str
     price: float
-    is_offer: bool | None = None
+    isOffer: bool | None = Body(alias="isOffer")
 
 
-@router.get("/{item_id}")
-def read_item(item_id: int, q: str | None = None):
-    return {"item_id": item_id, "q": q}  # q is optional query parameter
+@router.get("/{itemId}")
+def read_item(item_id: Annotated[str, Path(alias="itemId")], q: str | None = None):
+    return {"itemId": item_id, "q": q}  # q is optional query parameter
 
 
-@router.put("/{item_id}")
-async def update_item(item_id: str, item: Item):
-    return {"item": Item, "item_id": item_id}
+@router.put("/{itemId}")
+async def update_item(item_id: Annotated[str, Path(alias="itemId")], item: Item):
+    return {"itemId": item_id, "item_id": item.is_offer}
 
 
 ## Http Exception from Code
@@ -27,8 +30,8 @@ async def update_item(item_id: str, item: Item):
 items = {"foo": "The Foo Wrestlers"}
 
 
-@router.get("/str/{item_id}")
-async def read_item(item_id: str):
+@router.get("/str/{itemId}")
+async def read_item(item_id: Annotated[str, Path(alias="itemId")]):
     if item_id not in items:
         raise HTTPException(status_code=404, detail="Item not found")
     return {"item": items[item_id]}

@@ -1,7 +1,9 @@
 ## File Upload
 from typing import Annotated
-from fastapi import APIRouter, UploadFile, Depends
+from fastapi import APIRouter, UploadFile, Depends, Path
 from enum import Enum
+
+from fastapi.params import Query
 
 router = APIRouter()
 
@@ -26,15 +28,15 @@ async def read_users(commons: Annotated[dict, Depends(common_parameters)]):
     return commons
 
 
-@router.get("/models/{model_name}")
-async def get_model(model_name: ModelName):
+@router.get("/models/{modelName}")
+async def get_model(model_name: ModelName = Path(alias="modelName")):
     if model_name is ModelName.alexnet:
-        return {"model_name": model_name, "message": "Deep Learning FTW!"}
+        return {"modelName": model_name, "message": "Deep Learning FTW!"}
 
     if model_name.value == "lenet":
-        return {"model_name": model_name, "message": "LeCNN all the images"}
+        return {"modelName": model_name, "message": "LeCNN all the images"}
 
-    return {"model_name": model_name, "message": "Have some residuals"}
+    return {"modelName": model_name, "message": "Have some residuals"}
 
 
 # export as user router
