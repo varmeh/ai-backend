@@ -1,6 +1,6 @@
-import os
 import logging
 import coloredlogs
+from os import environ as env
 from pythonjsonlogger import jsonlogger
 from .app_mode import app_mode
 
@@ -8,9 +8,9 @@ _terminalfmt = "%(levelname)s - %(asctime)s - %(hostname)s - %(name)s - %(messag
 _jsonfmt = "%(asctime)s %(hostname)s %(message)s %(name)s %(levelname)s %(module)s %(funcName)s %(filename)s %(lineno)s"
 _datefmt = "%Y-%m-%d %I:%M:%S%p"
 
-_LOG_CONSOLE = os.getenv("LOG_CONSOLE", "True")
-_LOG_CONSOLE_LEVEL = os.getenv("LOG_CONSOLE_LEVEL", "DEBUG")
-_LOG_CONSOLE_JSON = os.getenv("LOG_CONSOLE_JSON", "False")
+_LOG_CONSOLE = env.get("LOG_CONSOLE", "True")
+_LOG_CONSOLE_LEVEL = env.get("LOG_CONSOLE_LEVEL", "DEBUG")
+_LOG_CONSOLE_JSON = env.get("LOG_CONSOLE_JSON", "True")
 
 
 def log_level(level):

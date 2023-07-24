@@ -1,5 +1,5 @@
-import os
 import uvicorn
+from os import environ as env
 
 
 ### ----------------- Environment Variable Configuration ----------------- ###
@@ -11,8 +11,8 @@ from dotenv import load_dotenv
 load_dotenv()
 
 
-host = os.getenv("HOST", "0.0.0.0")
-port = int(os.getenv("PORT", 8000))
+host = env.get("HOSTNAME")
+port = int(env.get("PORT", 8000))
 
 if __name__ == "__main__":
     __package__ = "app"
