@@ -16,15 +16,20 @@ class AppMode:
         if not self._app_mode:
             raise ValueError("APP_MODE environment variable not set")
 
-        self._app_mode = self._app_mode.lower()
-        if self._app_mode == "prod":
-            print("Running in Production Mode")
-        elif self._app_mode == "dev":
-            print("Running in Development Mode")
-        elif self._app_mode == "test":
-            print("Running in Test Mode")
-        else:
-            raise ValueError(f"Invalid APP_MODE environment variable: {self._app_mode}")
+        match self._app_mode.lower():
+            case "prod":
+                print("Running in Production Mode")
+
+            case "dev":
+                print("Running in Development Mode")
+
+            case "test":
+                print("Running in Test Mode")
+
+            case _:
+                raise ValueError(
+                    f"Invalid APP_MODE environment variable: {self._app_mode}"
+                )
 
     def is_dev(self):
         return self._app_mode == "dev"
