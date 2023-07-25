@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.middleware.gzip import GZipMiddleware
 
 
 from .configuration import (
@@ -26,6 +27,7 @@ app.add_middleware(ErrorHandlingMiddleware)
 
 app.add_middleware(APILoggingMiddleware)
 
+app.add_middleware(GZipMiddleware, minimum_size=1000)
 
 # CORS Configuration - First to process request, last to process response
 app.add_middleware(
