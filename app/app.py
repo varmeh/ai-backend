@@ -1,8 +1,8 @@
-from math import exp
-from fastapi import FastAPI, Request
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from .configuration import APILoggingMiddleware
+
+from .configuration import APILoggingMiddleware, ErrorHandlingMiddleware
 from .api import user_router, item_router
 from .util import logger
 
@@ -14,6 +14,8 @@ app = FastAPI(title="FastAPI Template", version="0.1.0", debug=True)
 
 logger.info("Setting up middleware")
 
+# Last to process request, first to process response
+app.add_middleware(ErrorHandlingMiddleware)
 
 app.add_middleware(APILoggingMiddleware)
 
