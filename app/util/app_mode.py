@@ -18,13 +18,13 @@ class AppMode:
 
         match self._app_mode.lower():
             case "prod":
-                print("Running in Production Mode")
+                print("<<<>>> Running in Production Mode")
 
             case "dev":
-                print("Running in Development Mode")
+                print("<<<>>> Running in Development Mode")
 
             case "test":
-                print("Running in Test Mode")
+                print("<<<>>> Running in Test Mode")
 
             case _:
                 raise ValueError(

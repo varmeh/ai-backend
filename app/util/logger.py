@@ -6,7 +6,7 @@ from .app_mode import app_mode
 
 # Add %(name)s to _terminalfmt if creating multiple loggers in the same app
 _terminalfmt = "%(asctime)s - %(hostname)s - %(levelname)s - %(message)s"
-_jsonfmt = "%(asctime)s %(hostname)s %(levelname)s %(module)s %(filename)s %(lineno)s %(message)s"
+_jsonfmt = "%(asctime)s %(hostname)s %(levelname)s %(module)s %(filename)s %(lineno)s"
 _datefmt = "%Y-%m-%d %I:%M:%S%p"
 
 _LOG_CONSOLE = env.get("LOG_CONSOLE", "True")
@@ -27,7 +27,7 @@ def log_level(level):
 # Usage example
 def setup_logger():
     # Create a custom logger
-    logger = logging.getLogger(__name__)
+    logger = logging.getLogger("ai-app-logger")
     logger.setLevel(log_level(_LOG_CONSOLE_LEVEL))
 
     # Create formatter
