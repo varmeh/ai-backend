@@ -1,11 +1,14 @@
-from fastapi import Request
+import time
+import json
+from typing import List, Union
+from fastapi import Request, Response
 from uuid import uuid4
 from starlette.types import Message
 
 
 from ..util import logger
 
-_request_Id_key = "X-API-REQUEST-ID"
+_request_Id_key = "apiTrackingId"
 
 
 async def logging_middleware(request: Request, call_next):
@@ -14,8 +17,17 @@ async def logging_middleware(request: Request, call_next):
         _request_Id_key: request_id  # X-API-REQUEST-ID maps each request-response to a unique ID
     }
     logging_dict["request"] = await _log_request(request, request_id)
+
+    start_time = time.perf_counter()
     response = await call_next(request)
-    response.headers["X-Process-Time"] = "Testing"
+    end_time = time.perf_counter()
+
+    await _log_response(
+        request=request,
+        response=response,
+        execution_time=end_time - start_time,
+        logging_dict=logging_dict,
+    )
     return response
 
 
@@ -52,7 +64,7 @@ async def _log_request(request: Request, request_id: str) -> dict:
 
     # Log Request Info at info level. This will be printed in all environments.
     logger.info(
-        f"@api request - {request.method} - {request.url.path}",
+        f"@Api Request - {request.method} - {request.url.path}",
         extra={
             _request_Id_key: request_id,
             "request": request_data,
@@ -63,7 +75,7 @@ async def _log_request(request: Request, request_id: str) -> dict:
     # If you want to print this log in production environments as well, consider changing the logging level to logger.info
     request_data["headers"] = dict(request.headers)
     logger.debug(
-        f"@api request - {request.method} - {request.url.path}",
+        f"@Api Request Detailed - {request.method} - {request.url.path}",
         extra={
             _request_Id_key: request_id,
             "request": request_data,
@@ -107,6 +119,76 @@ async def _receive_body_in_middleware(self: Request):
 
     # Replace the original _receive method with the custom one
     self._receive = custom_receive
+
+
+async def _log_response(
+    request: Request, response: Response, execution_time: float, logging_dict: dict
+):
+    overall_status = "success" if response.status_code < 400 else "failure"
+
+    response_logging = {
+        "status": overall_status,
+        "statusCode": response.status_code,
+        "processingTime": f"{execution_time:0.4}s",
+    }
+
+    logging_dict["response"] = response_logging
+
+    # Log Response Info at info level. This will be printed in all environments.
+    logger.info(
+        f"@Api Response - {request.method} - {request.url.path}",
+        extra=logging_dict,
+    )
+
+    # Log Request Detailed Information at debug level. This will be printed in development environments.
+    # If you want to print this log in production environments as well, consider changing the logging level to logger.info
+    logging_dict["response"]["headers"] = dict(response.headers)
+    logging_dict["response"]["body"] = await _extract_and_set_body(response)
+    logger.debug(
+        f"@Api Response Detailed - {request.method} - {request.url.path}",
+        extra=logging_dict,
+    )
+
+
+async def _extract_and_set_body(response: Response) -> Union[str, dict]:
+    """Extracts the body from the response and resets the body_iterator
+    for further usage by other parts of the code."""
+
+    body_bytes = [section async for section in response.body_iterator]
+    body_bytes_joined = b"".join(body_bytes)
+    response.body_iterator = _AsyncIteratorWrapper(body_bytes)
+
+    try:
+        resp_body = json.loads(body_bytes_joined.decode())
+    except json.JSONDecodeError:
+        # If we can't decode the body as JSON, it might be a plain text
+        resp_body = body_bytes_joined.decode(errors="replace")
+    except UnicodeDecodeError:
+        # If the body can't be decoded at all, use a placeholder
+        resp_body = "<Could not decode body>"
+
+    return resp_body
+
+
+class _AsyncIteratorWrapper:
+    """The following is a utility class that transforms a
+    regular iterable to an asynchronous one.
+
+    link: https://www.python.org/dev/peps/pep-0492/#example-2
+    """
+
+    def __init__(self, obj):
+        self._it = iter(obj)
+
+    def __aiter__(self):
+        return self
+
+    async def __anext__(self):
+        try:
+            value = next(self._it)
+        except StopIteration:
+            raise StopAsyncIteration
+        return value
 
 
 __all__ = ["logging_middleware"]
