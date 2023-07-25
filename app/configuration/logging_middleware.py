@@ -11,7 +11,7 @@ from ..util import logger
 
 _request_Id_key = "apiTrackingId"
 
-LOG_REQUESTS_DETAILED = env.get("LOG_REQUESTS_DETAILED", "True").lower() == "true"
+LOG_API_DETAILED = env.get("LOG_API_DETAILED", "True").lower() == "true"
 
 
 async def logging_middleware(request: Request, call_next):
@@ -66,19 +66,19 @@ async def _log_request(request: Request, request_id: str) -> dict:
                 logger.debug(f"Couldn't extract body due to: {e}")
 
     # Log Request Info at info level. This will be printed in all environments.
-    logger.info(
-        f"@Api Request - {request.method} - {request.url.path}",
-        extra={
-            _request_Id_key: request_id,
-            "request": request_data,
-        },
-    )
-
-    # Log Request Detailed Information at debug level. This will be printed in development environments.
-    # If you want to print this log in production environments as well, consider changing the logging level to logger.info
-    if LOG_REQUESTS_DETAILED:
+    if not LOG_API_DETAILED:
+        logger.info(
+            f"@Api Request - {request.method} - {request.url.path}",
+            extra={
+                _request_Id_key: request_id,
+                "request": request_data,
+            },
+        )
+    else:
+        # Log Request Detailed Information at debug level. This will be printed in development environments.
+        # If you want to print this log in production environments as well, consider changing the logging level to logger.info
         request_data["headers"] = dict(request.headers)
-        logger.debug(
+        logger.info(
             f"@Api Request Detailed - {request.method} - {request.url.path}",
             extra={
                 _request_Id_key: request_id,
@@ -139,17 +139,17 @@ async def _log_response(
     logging_dict["response"] = response_logging
 
     # Log Response Info at info level. This will be printed in all environments.
-    logger.info(
-        f"@Api Response - {request.method} - {request.url.path}",
-        extra=logging_dict,
-    )
-
-    # Log Request Detailed Information at debug level. This will be printed in development environments.
-    # If you want to print this log in production environments as well, consider changing the logging level to logger.info
-    if LOG_REQUESTS_DETAILED:
+    if not LOG_API_DETAILED:
+        logger.info(
+            f"@Api Response - {request.method} - {request.url.path}",
+            extra=logging_dict,
+        )
+    else:
+        # Log Request Detailed Information at debug level. This will be printed in development environments.
+        # If you want to print this log in production environments as well, consider changing the logging level to logger.info
         logging_dict["response"]["headers"] = dict(response.headers)
         logging_dict["response"]["body"] = await _extract_and_set_body(response)
-        logger.debug(
+        logger.info(
             f"@Api Response Detailed - {request.method} - {request.url.path}",
             extra=logging_dict,
         )
