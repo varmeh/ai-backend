@@ -4,8 +4,9 @@ from os import environ as env
 from pythonjsonlogger import jsonlogger
 from .app_mode import app_mode
 
-_terminalfmt = "%(levelname)s - %(asctime)s - %(hostname)s - %(name)s - %(message)s"
-_jsonfmt = "%(asctime)s %(hostname)s %(message)s %(name)s %(levelname)s %(module)s %(funcName)s %(filename)s %(lineno)s"
+# Add %(name)s to _terminalfmt if creating multiple loggers in the same app
+_terminalfmt = "%(asctime)s - %(hostname)s - %(levelname)s - %(message)s"
+_jsonfmt = "%(asctime)s %(hostname)s %(levelname)s %(module)s %(filename)s %(lineno)s %(message)s"
 _datefmt = "%Y-%m-%d %I:%M:%S%p"
 
 _LOG_CONSOLE = env.get("LOG_CONSOLE", "True")
