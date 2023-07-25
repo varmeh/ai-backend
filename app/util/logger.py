@@ -9,12 +9,12 @@ _terminalfmt = "%(asctime)s - %(hostname)s - %(levelname)s - %(message)s"
 _jsonfmt = "%(asctime)s %(hostname)s %(levelname)s %(module)s %(filename)s %(lineno)s"
 _datefmt = "%Y-%m-%d %I:%M:%S%p"
 
-_LOG_CONSOLE = env.get("LOG_CONSOLE", "True")
+_LOG_CONSOLE = env.get("LOG_CONSOLE", "True").lower() == "true"
 _LOG_CONSOLE_LEVEL = env.get("LOG_CONSOLE_LEVEL", "DEBUG")
-_LOG_CONSOLE_JSON = env.get("LOG_CONSOLE_JSON", "True")
+_LOG_CONSOLE_JSON = env.get("LOG_CONSOLE_JSON", "True").lower() == "true"
 
 
-def log_level(level):
+def _log_level(level):
     match level:
         case "INFO":
             return logging.INFO
@@ -28,7 +28,7 @@ def log_level(level):
 def setup_logger():
     # Create a custom logger
     logger = logging.getLogger("ai-app-logger")
-    logger.setLevel(log_level(_LOG_CONSOLE_LEVEL))
+    logger.setLevel(_log_level(_LOG_CONSOLE_LEVEL))
 
     # Create formatter
     json_formatter = jsonlogger.JsonFormatter(
@@ -37,7 +37,7 @@ def setup_logger():
         datefmt=_datefmt,
     )
 
-    if _LOG_CONSOLE.lower() == "true":
+    if _LOG_CONSOLE:
         # Console Prints would be divided into 2 parts
         # A Colored line & A JSON with all the information
 
@@ -49,7 +49,7 @@ def setup_logger():
         )
 
         # JSON Formatter
-        if _LOG_CONSOLE_JSON.lower() == "true":
+        if _LOG_CONSOLE_JSON:
             console_handler = logging.StreamHandler()
             console_handler.setLevel(logging.DEBUG)
             console_handler.setFormatter(json_formatter)
