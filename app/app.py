@@ -2,7 +2,7 @@ from math import exp
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 
-from .configuration import logging_middleware
+from .configuration import api_logging_middleware
 from .api import user_router, item_router
 from .util import logger
 
@@ -25,7 +25,7 @@ app.add_middleware(
 
 @app.middleware("http")
 async def logging(request: Request, call_next):
-    return await logging_middleware(request, call_next)
+    return await api_logging_middleware(request, call_next)
 
 
 ### ----------------- Routes Configuration ----------------- ###

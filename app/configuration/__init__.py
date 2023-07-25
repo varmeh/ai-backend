@@ -1,3 +1,3 @@
 # configuration.__init__.py
 
-from .logging_middleware import logging_middleware
+from .api_logging_middleware import api_logging_middleware

@@ -14,7 +14,7 @@ _request_Id_key = "apiTrackingId"
 LOG_API_DETAILED = env.get("LOG_API_DETAILED", "True").lower() == "true"
 
 
-async def logging_middleware(request: Request, call_next):
+async def api_logging_middleware(request: Request, call_next):
     request_id = str(uuid4())
     logging_dict = {
         _request_Id_key: request_id  # X-API-REQUEST-ID maps each request-response to a unique ID
@@ -133,7 +133,7 @@ async def _log_response(
     response_logging = {
         "status": overall_status,
         "statusCode": response.status_code,
-        "processingTime": f"{execution_time:0.4}s",
+        "processingTime": f"{execution_time*1000:0.2}ms",
     }
 
     logging_dict["response"] = response_logging
@@ -196,4 +196,4 @@ class _AsyncIteratorWrapper:
         return value
 
 
-__all__ = ["logging_middleware"]
+__all__ = ["api_logging_middleware"]
