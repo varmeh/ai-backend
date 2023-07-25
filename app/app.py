@@ -2,18 +2,23 @@ from math import exp
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 
-from .configuration import api_logging_middleware
+from .configuration import APILoggingMiddleware
 from .api import user_router, item_router
 from .util import logger
 
 app = FastAPI(title="FastAPI Template", version="0.1.0", debug=True)
 
 ### ----------------- Middleware Configuration ----------------- ###
+# Order in middleware matters
+# The last middleware added is the first one to process the request and the last one to process the response.
 
 logger.info("Setting up middleware")
 
 
-# CORS Configuration
+app.add_middleware(APILoggingMiddleware)
+
+
+# CORS Configuration - First to process request, last to process response
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],  # TODO: Set a custom list of origins, methods & headers
@@ -21,11 +26,6 @@ app.add_middleware(
     allow_headers=["*"],
     expose_headers=["*"],
 )
-
-
-@app.middleware("http")
-async def logging(request: Request, call_next):
-    return await api_logging_middleware(request, call_next)
 
 
 ### ----------------- Routes Configuration ----------------- ###
