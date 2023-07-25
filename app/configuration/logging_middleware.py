@@ -1,5 +1,6 @@
 import time
 import json
+from os import environ as env
 from typing import List, Union
 from fastapi import Request, Response
 from uuid import uuid4
@@ -9,6 +10,8 @@ from starlette.types import Message
 from ..util import logger
 
 _request_Id_key = "apiTrackingId"
+
+LOG_REQUESTS_DETAILED = env.get("LOG_REQUESTS_DETAILED", "True").lower() == "true"
 
 
 async def logging_middleware(request: Request, call_next):
@@ -73,14 +76,15 @@ async def _log_request(request: Request, request_id: str) -> dict:
 
     # Log Request Detailed Information at debug level. This will be printed in development environments.
     # If you want to print this log in production environments as well, consider changing the logging level to logger.info
-    request_data["headers"] = dict(request.headers)
-    logger.debug(
-        f"@Api Request Detailed - {request.method} - {request.url.path}",
-        extra={
-            _request_Id_key: request_id,
-            "request": request_data,
-        },
-    )
+    if LOG_REQUESTS_DETAILED:
+        request_data["headers"] = dict(request.headers)
+        logger.debug(
+            f"@Api Request Detailed - {request.method} - {request.url.path}",
+            extra={
+                _request_Id_key: request_id,
+                "request": request_data,
+            },
+        )
 
     return request_data_orig
 
@@ -142,12 +146,13 @@ async def _log_response(
 
     # Log Request Detailed Information at debug level. This will be printed in development environments.
     # If you want to print this log in production environments as well, consider changing the logging level to logger.info
-    logging_dict["response"]["headers"] = dict(response.headers)
-    logging_dict["response"]["body"] = await _extract_and_set_body(response)
-    logger.debug(
-        f"@Api Response Detailed - {request.method} - {request.url.path}",
-        extra=logging_dict,
-    )
+    if LOG_REQUESTS_DETAILED:
+        logging_dict["response"]["headers"] = dict(response.headers)
+        logging_dict["response"]["body"] = await _extract_and_set_body(response)
+        logger.debug(
+            f"@Api Response Detailed - {request.method} - {request.url.path}",
+            extra=logging_dict,
+        )
 
 
 async def _extract_and_set_body(response: Response) -> Union[str, dict]:
