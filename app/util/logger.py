@@ -61,12 +61,4 @@ def setup_logger():
 # Use the logger
 logger = setup_logger()
 
-if app_mode.is_dev():
-    # Test the logger
-    logger.debug("Test Debug Message")
-    logger.info("Test Info Message", extra={"more-info": "test info"})
-    logger.warning("Test Warning Message")
-    logger.error("Test Error Message")
-
-
 __all__ = ["logger"]

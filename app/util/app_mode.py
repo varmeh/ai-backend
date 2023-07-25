@@ -40,6 +40,9 @@ class AppMode:
     def is_test(self):
         return self._app_mode == "test"
 
+    def get(self):
+        return self._app_mode
+
 
 # Creating App Mode
 app_mode = AppMode()

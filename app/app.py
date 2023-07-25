@@ -2,9 +2,16 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 
-from .configuration import APILoggingMiddleware, ErrorHandlingMiddleware
+from .configuration import (
+    APILoggingMiddleware,
+    ErrorHandlingMiddleware,
+    configure_sentry,
+)
 from .api import user_router, item_router
 from .util import logger
+
+# Configure Sentry
+configure_sentry()
 
 app = FastAPI(title="FastAPI Template", version="0.1.0", debug=True)
 
