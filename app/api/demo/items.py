@@ -12,7 +12,7 @@ router = APIRouter(prefix="/items", tags=["items"])
 class Item(BaseModel):
     name: str
     price: float
-    isOffer: bool | None = Body(alias="isOffer")
+    is_offer: bool | None = Body(alias="isOffer")
 
 
 @router.get("/{itemId}")
@@ -22,7 +22,7 @@ def read_item(item_id: Annotated[str, Path(alias="itemId")], q: str | None = Non
 
 @router.put("/{itemId}")
 async def update_item(item_id: Annotated[str, Path(alias="itemId")], item: Item):
-    return {"itemId": item_id, "item_id": item.is_offer}
+    return {"itemId": item_id, "itemOffer": item.is_offer}
 
 
 ## Http Exception from Code
